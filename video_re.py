@@ -61,7 +61,7 @@ def video_to_frame(filename, H_fps): #사용자가 원하는 프레임으로 캡
 
     video.release()
 
-def frame_to_npy(folderOfFrames):
+def frame_to_npy(folderOfFrames): # frames를 (batch_size, height, width, channel)의 numpy 배열로 저장하기.
     dataName = os.path.split(folderOfFrames)[1]
     frames = [img for img in os.listdir(folderOfFrames) if img.endswith(".jpg")] #jpg만 모아서 리스트에 저장.
     frames.sort()
