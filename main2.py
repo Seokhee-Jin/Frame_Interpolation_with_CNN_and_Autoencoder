@@ -13,6 +13,7 @@ trainset.shape[0]//3
 trainset2 = trainset[:trainset.shape[0]//3*3].reshape(trainset.shape[0]//3,3,100,100,3)
 plt.imshow(trainset2[0,2])
 
+"//%03d.jpg" % 12
 
 '''trainset = np.load(r"D:\smalldata\trainset.npy")
 

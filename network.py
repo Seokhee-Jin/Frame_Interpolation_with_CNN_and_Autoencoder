@@ -41,20 +41,6 @@ def gpu_limit2():
             # Virtual devices must be set before GPUs have been initialized
             print(e)
 
-def npys_to_one_np(npysDirPath: str):
-    npyPathList = [os.path.join(npysDirPath, filename) for filename in os.listdir(npysDirPath) if
-                   filename.endswith('.npy')]
-
-    movies = np.load(npyPathList[0])
-    print(f'{npyPathList[0]} is appended to return. --{1}/{len(npyPathList)}--')
-    for i in range(len(npyPathList) - 1):
-        movies = np.append(movies, np.load(npyPathList[i + 1]), axis=0)
-        print(f'{npyPathList[i+1]} is appended to return.--{(i+2)}/{len(npyPathList)}--')
-
-    movies = (movies/255.0).astype('float32')
-
-    return  movies
-
 
 def autoencoder():
     inputs = keras.layers.Input(shape=(100, 100, 3))  # (1, 100, 100, 3)
@@ -91,8 +77,6 @@ if __name__ == '__main__':
 
     trainset = np.random.shuffle(validset)
     validset = np.random.shuffle(trainset)
-
-
 
 
     encoder, decoder, autoencoder = autoencoder()
