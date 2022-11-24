@@ -1,26 +1,26 @@
+import network
 from network import *
 import numpy as np
 from tensorflow import keras
 import matplotlib.pyplot as plt
+from preprocess import *
+from network import *
 
-trainset = np.load(r"D:\smalldata\trainset.npy")
+np_, size_ = load_npys_and_get_one_np(r"D:\data1min_\datasets", 3, num_seq=1, seed=42)
+print(10, size_)
+trainset, validset, testset = np_to_tf_dataset(np_,size_)
 
-inputs = np.expand_dims(trainset[1], 0)
-encoder = keras.layers.Conv2D(16, 3, padding='same', activation='selu')(inputs)  # (1, 100, 100, 16)
-encoder = keras.layers.Conv2D(16, 3, padding='same', activation='selu')(inputs)
-encoder = keras.layers.AvgPool2D(pool_size=2)(encoder)  # (1, 50, 50, 16)
-print(encoder.shape)
-encoder = keras.layers.Conv2D(32, 3, padding='same', activation='selu')(encoder)  # (1, 50, 50, 32)
-encoder = keras.layers.Conv2D(32, 3, padding='same', activation='selu')(encoder)
-encoder = keras.layers.AvgPool2D(pool_size=2)(encoder)  # (1, 25, 25, 32)
-print(encoder.shape)
-encoder = keras.layers.Conv2D(64, 3, padding='same', activation='selu')(encoder)  # (1, 25, 25, 64)
-encoder = keras.layers.Conv2D(64, 3, padding='same', activation='selu')(encoder)
-print(encoder.shape)
-encoder_model = keras.Model(inputs=inputs, outputs=encoder, name='encoder')
+print(12)
+encoder, decoder, autoencoder = autoencoder()
 
-encoder_output = keras.layers.Input(shape=(12, 12, 64))
-decoder = keras.layers.Conv2DTranspose(32, 3, strides=2, padding='valid', activation='selu')(encoder_output)
-decoder = keras.layers.Conv2DTranspose(16, 3, strides=2, padding='same', activation='selu')(decoder)
-decoder = keras.layers.Conv2DTranspose(3, 3, strides=2, padding='same', activation='selu')(
-    decoder)
+'''for item in trainset.take(3):
+    print(type(item[0]))
+    print(item[0].shape)
+'''
+
+autoencoder.compile(loss='mse', optimizer='adam',metrics=['acc'])
+
+checkpoint_cb = keras.callbacks.ModelCheckpoint(r".\autoencoder_checkpoint.h5", save_best_only = True) # 마지막 인자는 fit할때 validation 세트가 있어야 설정 가능.
+early_stopping_cb = keras.callbacks.EarlyStopping(patience = 10, restore_best_weights = True)  # 10에포크 동안 검증 세트에 대한 성능향상이 없을 경우 훈련 조기 종료. 최상 모델로 저장됨(history 객체로)
+
+history = autoencoder.fit(trainset, epochs=100, batch_size=32,  validation_data=validset, callbacks =  [checkpoint_cb, early_stopping_cb])

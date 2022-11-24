@@ -13,6 +13,7 @@ def auto_import():
     import os
     import matplotlib.pyplot as plt
     import cv2
+    keras.layers.Reshape()
 
 def gpu_limit():
     gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -43,45 +44,48 @@ def gpu_limit2():
 
 
 def autoencoder():
-    inputs = keras.layers.Input(shape=(100, 100, 3))  # (1, 100, 100, 3)
-    encoder = keras.layers.Conv2D(16, 3, padding='same', activation='selu')(inputs)  # (1, 100, 100, 16)
-    encoder = keras.layers.Conv2D(16, 3, padding='same', activation='selu')(inputs)
-    encoder = keras.layers.AvgPool2D(pool_size=2)(encoder)  # (1, 50, 50, 16)
-    encoder = keras.layers.Conv2D(32, 3, padding='same', activation='selu')(encoder)  # (1, 50, 50, 32)
-    encoder = keras.layers.Conv2D(32, 3, padding='same', activation='selu')(encoder)
-    encoder = keras.layers.AvgPool2D(pool_size=2)(encoder)  # (1, 25, 25, 32)
-    encoder = keras.layers.Conv2D(64, 3, padding='same', activation='selu')(encoder)  # (1, 25, 25, 64)
-    encoder = keras.layers.Conv2D(64, 3, padding='same', activation='selu')(encoder)
-    encoder_model = keras.Model(inputs=inputs, outputs=encoder, name='encoder')
+    def encoder():
+        inputs = keras.layers.Input(shape=(100, 100, 3))
+        encoder = keras.layers.Conv2D(12, 3, strides=2, padding='same', activation='selu')(inputs)
+        encoder = keras.layers.Conv2D(12, 3, padding='same', activation='selu')(inputs)
+        encoder = keras.layers.Conv2D(24, 3, strides=2, padding='same', activation='selu')(encoder)
+        encoder = keras.layers.Conv2D(24, 3, padding='same', activation='selu')(encoder)
+        encoder = keras.layers.Conv2D(48, 3, strides=2, padding='same', activation='selu')(encoder)
+        encoder = keras.layers.Conv2D(48, 3, padding='same', activation='selu')(encoder)
 
-    encoder_output = keras.layers.Input(shape=(25, 125, 64))
-    decoder = keras.layers.Conv2DTranspose(32, 3, strides=2, padding='valid', activation='selu')(encoder_output)
-    decoder = keras.layers.Conv2DTranspose(16, 3, strides=2, padding='same', activation='selu')(decoder)
-    decoder = keras.layers.Conv2DTranspose(3, 3, strides=2, padding='same', activation='selu')(
-        decoder)  # (1, 100, 100, 3)
-    decoder_model = keras.Model(inputs=encoder_output, outputs=decoder, name='decoder')
+        encoder = keras.layers.Flatten()(encoder)
+        encoder = keras.layers.Dropout(rate=0.2)(encoder)
+        encoder = keras.layers.Dense(2500, activation='elu', kernel_initializer='he_normal')(encoder)
+        encoder = keras.layers.Reshape((50, 50))(encoder)
+        encoder_model = keras.Model(inputs=inputs, outputs=encoder, name='encoder')
+        return encoder_model
 
-    autoencoder_model = keras.models.Sequential([encoder_model, decoder_model])
+    def decoder():
+        encoder_output = keras.layers.Input(shape=(50, 50))
+        decoder = keras.layers.Flatten()(encoder_output)
+        decoder = keras.layers.Dropout(rate=0.2)(decoder)
+        decoder = keras.layers.Dense(30000, activation='elu', kernel_initializer='he_normal')(decoder)
+        decoder = keras.layers.Reshape((25, 25, 48))(decoder)
+        decoder = keras.layers.Conv2DTranspose(24, 3, strides=2, padding='same', activation='selu')(decoder)
+        decoder = keras.layers.Conv2DTranspose(12, 3, strides=2, padding='same', activation='selu')(decoder)
+        decoder = keras.layers.Conv2DTranspose(3, 3, strides=1, padding='same', activation='selu')(
+            decoder)
+        decoder_model = keras.Model(inputs=encoder_output, outputs=decoder, name='decoder')
+        return decoder_model
 
-    return encoder_model, decoder_model, autoencoder_model
+    autoencoder_model = keras.models.Sequential([encoder(), decoder()])
+
+    return encoder(), decoder(), autoencoder_model
 
 ''''''
 
 
 if __name__ == '__main__':
 
-    gpu_limit2()
-    trainset = npys_to_one_np("D:\smalldata\datasets")
-    validset = npys_to_one_np(r"D:\valdata\datasets")
-
-
-    trainset = np.random.shuffle(validset)
-    validset = np.random.shuffle(trainset)
-
 
     encoder, decoder, autoencoder = autoencoder()
     autoencoder.compile(loss='mse', optimizer='adam')
-    history = autoencoder.fit(x=trainset, y=trainset, batch_size=4)
+
 
 '''movies = movie1
 for movie in
