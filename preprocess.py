@@ -28,10 +28,17 @@ def load_npys_and_get_one_np(folderpath: str, num_npy: int, num_seq: int = 3, ba
     return np_of_npys, dataset_size
 
 
-def np_to_tf_dataset(ndarray, dataset_size: int, train_split=0.8, val_split=0.1, test_split=0.1, buffer_size:int = 10000, batch_size: int = 32, seed: int = None):
+def np_to_tf_dataset(ndarray, dataset_size: int, train_split=0.7, val_split=0.2, test_split=0.1, buffer_size:int = 10000, batch_size: int = 32, seed: int = None):
     assert (train_split + test_split + val_split) == 1
 
-    dataset = tf.data.Dataset.from_tensor_slices((ndarray, ndarray)) # Feature하고 Target 같이 넣어야함..
+    if ndarray.ndim == 5: # ndarray.shape ==(None, 3, 100, 100, 3): 가운데 프레임 예측 모델 데이터셋
+        center_idx = ndarray.shape[1]//2
+        mask_x = [True] * ndarray.shape[1]; mask_x[center_idx] = False
+        mask_y = [False] * ndarray.shape[1]; mask_y[center_idx] = True
+        dataset = tf.data.Dataset.from_tensor_slices((ndarray[:, mask_x], ndarray[:, mask_y])) # 타겟값은 가운데 프레임이다.
+    else: # ndarray.shape ==(None, 100, 100, 3): autoencoder용 데이터셋
+        dataset = tf.data.Dataset.from_tensor_slices((ndarray, ndarray))  # autoencoder는 특성값과 타겟값이 같다.
+
 
     train_size = int(train_split * dataset_size)
     val_size = int(val_split * dataset_size)

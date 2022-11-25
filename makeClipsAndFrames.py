@@ -12,9 +12,9 @@ def make_clips_and_frames(root_dir=r"D:\data",
     for video in video_list:
         video_cv = cv2.VideoCapture(os.path.join(video_dir, video))
         end_sec = int((video_cv.get(cv2.CAP_PROP_FRAME_COUNT) / video_cv.get(cv2.CAP_PROP_FPS)))  # 동영상 길이
-        for min in range(int(end_sec / 60)):  # 분단위로 쪼개버린다..
-            video_re.clip_in_directory(os.path.join(video_dir, video), min * 60, min * 60 + 60,
-                                       os.path.splitext(video)[0] + "%03d" % min, root_dir)
+        for tensec in range(int(end_sec / 10)):  # 십초 단위로 쪼갠다..
+            video_re.clip_in_directory(os.path.join(video_dir, video), tensec * 10, tensec * 10 + 10,
+                                       os.path.splitext(video)[0] + "%04d" % tensec, root_dir)
 
     clip_dir = os.path.join(root_dir, 'clip')
     clip_list = os.listdir(clip_dir)
@@ -28,5 +28,4 @@ def make_clips_and_frames(root_dir=r"D:\data",
 
 
 if __name__ == '__main__':
-    # make_clips_and_frames(root_dir=r"D:\data1min_", video_dir=r"D:\data\video")
-    print('__name__')
+    make_clips_and_frames(root_dir=r"D:\data10sec", video_dir=r"D:\data\video")
