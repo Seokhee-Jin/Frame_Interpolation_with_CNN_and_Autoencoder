@@ -1,0 +1,2 @@
+model_checkpoint_path: "middle_frame_predictor.tf"
+all_model_checkpoint_paths: "middle_frame_predictor.tf"
