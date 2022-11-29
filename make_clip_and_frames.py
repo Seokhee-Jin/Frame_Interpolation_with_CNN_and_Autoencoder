@@ -70,15 +70,33 @@ def video_to_frame(filename, H_fps, directory):  # 사용자가 원하는 프레
 
     video.release()
 
+def frame_to_video(frame_dir, fps, result_dir='.'):
+    """
+    :param frame_dir: 비디오로 변환할 프레임이 있는 디렉토리 이름
+    :param result_dir: 변환 결과 비디오 이름 지정
+    :param fps: fps 지정
+    """
+    clips = []
 
-def frame_to_npy(folderOfFrames: str, directory: str):  # frames를 (batch_size, height, width, channel)의 numpy 배열로 저장하기.
-    dataName = os.path.split(folderOfFrames)[1]
-    frames = [img for img in os.listdir(folderOfFrames) if img.endswith(".jpg")]  # jpg만 모아서 리스트에 저장.
+    os.path.basename(frame_dir)
+    frame_dir_list = sorted(os.listdir(frame_dir))
+
+    for filename in frame_dir_list:
+        if filename.endswith(".jpg"):
+            clips.append(ImageClip(os.path.join(frame_dir, filename)).set_duration(1/fps))
+
+    video = concatenate_videoclips(clips, method="compose")
+    video.write_videofile(os.path.join(result_dir, os.path.basename(frame_dir) + '.mp4'), fps=fps)
+
+
+def frame_to_npy(frames_dir: str, directory: str):  # frames를 (batch_size, height, width, channel)의 numpy 배열로 저장하기.
+    dataName = os.path.split(frames_dir)[1]
+    frames = [img for img in os.listdir(frames_dir) if img.endswith(".jpg")]  # jpg만 모아서 리스트에 저장.
     frames.sort()
 
     frames_array = []
     for img in frames:
-        frames_array.append(cv2.imread(os.path.join(folderOfFrames, img)))
+        frames_array.append(cv2.imread(os.path.join(frames_dir, img)))
         print(img + " appended to {}.npy".format(dataName))
 
     frames_np = np.array(frames_array)
@@ -118,4 +136,6 @@ def make_clips_and_frames(root_dir=r"D:\data", video_dir=r"D:\data\video"):
 
 
 if __name__ == '__main__':
-    make_clips_and_frames(root_dir=_root_dir_for_saving_clips_and_frames, video_dir=_original_video_dir)
+    frame_to_video(r"D:\data10sec\frame\Avatar0001", 24)
+    #make_clips_and_frames(root_dir=_root_dir_for_saving_clips_and_frames, video_dir=_original_video_dir)
+

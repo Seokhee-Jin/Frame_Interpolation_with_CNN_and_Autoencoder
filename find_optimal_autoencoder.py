@@ -4,10 +4,11 @@
 """
 
 import numpy as np
-import limit_gpu
 import make_dataset
 import os
 from tensorflow import keras
+
+import train_networks
 from train_networks import Train
 
 _npy_dataset_path = r"D:\data10sec\datasets"
@@ -26,7 +27,7 @@ def proto_autoencoder_train_and_save(proto_auto_encoder, num_npy: int = 10, epoc
     이때 모든 훈련 과정에선 같은 데이터 세트를 사용하도록 해야한다.
     """
     log_path = os.path.join(_root_log_path, proto_auto_encoder.name)
-    weights_save_path = os.path.join(_root_weights_save_path, proto_auto_encoder.name + '.tf')
+    weights_save_path = os.path.join(_root_weights_save_path, proto_auto_encoder.name + '.h5')
     if weights_load_ok:
         print(weights_save_path)
         proto_auto_encoder.load_weights(weights_save_path)
@@ -44,8 +45,7 @@ def proto_autoencoder_train_and_save(proto_auto_encoder, num_npy: int = 10, epoc
         trainset, validset, testset = make_dataset.np_to_tf_dataset(ndarray, dataset_size, encoder=encoder, seed=i)
 
         proto_auto_encoder.fit(trainset, epochs=epochs, batch_size=batch_size, validation_data=validset,
-                               callbacks=Train.callbacks(log_path=log_path, weights_save_path=weights_save_path))
-
+                               callbacks=Train.callbacks(log_path=log_path, weights_save_path=weights_save_path, save_weights_only=False))
         del ndarray, trainset, validset, testset
 
     proto_auto_encoder.save(os.path.join(os.path.join('train', 'checkpoints'), proto_auto_encoder.name))
@@ -137,7 +137,7 @@ def _num4_proto_ae():  # 테스트 결과 _num4_proto_ae()까지 포함해서 �
 
 if __name__ == '__main__':
     """ gpu 최적화"""
-    limit_gpu.gpu_limit()
+    train_networks.GPU_limit.gpu_limit()
     os.putenv('TF_GPU_ALLOCATOR', 'cuda_malloc_async')
 
     """network._num1_proto_ae 훈련시키기"""
