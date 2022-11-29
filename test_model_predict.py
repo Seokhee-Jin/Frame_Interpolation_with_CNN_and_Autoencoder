@@ -9,8 +9,8 @@ _imagefile1 = r'D:\data10sec\frame\Avatar0001\000072.jpg'
 _imagefile2 = r'D:\data10sec\frame\Avatar0130\000072.jpg'
 _ae_model_load_path = os.path.join('train', 'checkpoints', 'proto_ae_123321.h5')
 
-_frame_weights_transfer = r"C:\Users\32174417\PycharmProjects\openSourceAI_22_2\train\1.5hrTransfer(해제)Naturalcheckpoints\transfer_middle_frame_predictor.h5"
-_frame_weights_natural = r"C:\Users\32174417\PycharmProjects\openSourceAI_22_2\train\1.5hrTransfer(해제)Naturalcheckpoints\natural_middle_frame_predictor.h5"
+_frame_weights_transfer = r"C:\Users\32174417\PycharmProjects\openSourceAI_22_2\train\checkpoints\둘다 한시간폴더. 삼십분뒤에 네추럴 또 저장예정\transfer_middle_frame_predictor.h5"
+_frame_weights_natural = r"C:\Users\32174417\PycharmProjects\openSourceAI_22_2\train\checkpoints\둘다 한시간폴더. 삼십분뒤에 네추럴 또 저장예정\natural_middle_frame_predictor.h5"
 _frames_dir = r"D:\data10sec\frame\Avatar0001"
 _frame_path_list = [os.path.join(_frames_dir, frame) for frame in os.listdir(_frames_dir) if frame.endswith('.jpg')]
 _frame_path_list.sort()
@@ -93,11 +93,11 @@ if __name__ == '__main__':
     #test_autoencoder(autoencoder)
 
     #동결전이모델 테스트
-    # _middle_frame_predictor_model = Networks.get_middle_frame_predictor()
+    _middle_frame_predictor_model = Networks.get_middle_frame_predictor()
     # _middle_frame_predictor_model.load_weights(_frame_weights_transfer)
     # test_middle_frame_predictor(_middle_frame_predictor_model)
 
     #전이x모델 테스트
-    _middle_frame_predictor_model = Networks.get_middle_frame_predictor()
-    _middle_frame_predictor_model.load_weights(_frame_weights_natural)
-    test_middle_frame_predictor(_middle_frame_predictor_model)
+    # _middle_frame_predictor_model = Networks.get_middle_frame_predictor()
+    # _middle_frame_predictor_model.load_weights(_frame_weights_natural)
+    # test_middle_frame_predictor(_middle_frame_predictor_model)

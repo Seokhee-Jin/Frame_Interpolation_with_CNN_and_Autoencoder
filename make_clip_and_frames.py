@@ -37,11 +37,7 @@ def video_to_frame(filename, H_fps, directory):  # 사용자가 원하는 프레
     filename_without_extension = os.path.splitext(os.path.basename(filename))[0]
     directory_path = os.path.join(directory, 'frame', filename_without_extension)
 
-    try:
-        if not os.path.exists(directory_path):
-            os.makedirs(directory_path)
-    except OSError:
-        print('Error: Creating directory. ' + directory_path)
+    os.makedirs(directory_path, exist_ok=True)
 
     video = cv2.VideoCapture(filename)
 
@@ -66,6 +62,8 @@ def video_to_frame(filename, H_fps, directory):  # 사용자가 원하는 프레
         count += 1
 
     video.release()
+
+    return
 
 def frame_to_video(frame_dir, fps, result_dir='.'):
     """
