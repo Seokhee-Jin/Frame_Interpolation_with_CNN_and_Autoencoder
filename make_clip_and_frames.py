@@ -60,9 +60,6 @@ def video_to_frame(filename, H_fps, directory):  # 사용자가 원하는 프레
         ret, image = video.read()
         if not ret: break
         if (count % HPS == 0):
-            # h, w, c = image.shape
-            # mid_x, mid_y = w // 2, h // 2
-            # image = image[mid_y - 50:mid_y + 50, mid_x - 50:mid_x + 50]
             cv2.imwrite(os.path.join(directory_path, "%06d.jpg" % number), image)
             print('Saved frame number :', filename_without_extension, str(int(video.get(1))))
             number += 1
