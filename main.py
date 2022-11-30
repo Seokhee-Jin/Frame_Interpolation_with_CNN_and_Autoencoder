@@ -7,10 +7,14 @@ import os
 import shutil
 from PIL import Image
 
+# r"D:\data1min_\clip\Avatar130.mp4"
+# r"D:\data1min_\clip\Singin'.In.The.Rain057.mp4"
+# r"D:\data1min_\clip\Spirited.Away012.mp4"
+# r"D:\data1min_\clip\Star.Wars091.mp4"
+# r"D:\data1min_\clip\The.Lion.King004.mp4"
 
-
-_video_path = r"C:\Users\32174417\PycharmProjects\openSourceAI_22_2\video\sample.mp4"
-_frame_weights = r"C:\Users\32174417\PycharmProjects\openSourceAI_22_2\train\1.5hrTransfer(해제)Naturalcheckpoints\transfer_middle_frame_predictor.h5"
+_video_path = r"D:\data1min_\clip\Avatar130.mp4"
+_frame_weights = os.path.join("train", "checkpoints", "transfer_middle_frame_predictor.h5")
 _middle_frame_predictor_model = Networks.get_middle_frame_predictor()
 _middle_frame_predictor_model.load_weights(_frame_weights)
 

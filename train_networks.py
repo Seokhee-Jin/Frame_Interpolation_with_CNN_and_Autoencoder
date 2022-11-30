@@ -209,9 +209,9 @@ if __name__ == '__main__':
 
     """Res Unit을 사용하지 않은 사전훈련된 오토인코더를 동결해서 전이 학습해보기."""
     # 처음 훈련시
-    Train.train_middle_frame_predictor(20, 100, 1000, ae_transfer_ok=True, ae_transfer_trainable=False, resume_train=False)
+    #Train.train_middle_frame_predictor(20, 100, 1000, ae_transfer_ok=True, ae_transfer_trainable=False, resume_train=False)
     # if performance is not improving, stop previous line, and run next line.
-    #Train().train_middle_frame_predictor(20, 100, 1000, ae_transfer_ok=True, ae_transfer_trainable=True, resume_train=True)
+    Train().train_middle_frame_predictor(20, 100, 1000, ae_transfer_ok=True, ae_transfer_trainable=True, resume_train=True, patience_of_early_stopping=20)
 
 
     """Res Unit을 사용하지 않은 초기 상태의 오토인코더를 사용하여 학습해보기"""
