@@ -7,15 +7,9 @@ import time
 _npy_dataset_path = r"D:\data10sec\datasets"
 _ae_model_load_path = os.path.join('train', 'checkpoints', 'proto_ae_123321.h5')
 
-_ae_weights_save_path = os.path.join('train', 'checkpoints', 'autoencoder_checkpoint.h5')
-_ae_weights_load_path = _ae_weights_save_path
-_ae_log_path = os.path.join('train', 'logs', 'autoencoder')
-
-_frame_weights_save_path = os.path.join('train', 'checkpoints', 'middle_frame_predictor.h5')
-_frame_weights_load_path = _frame_weights_save_path
+_frame_model_save_path = os.path.join('train', 'checkpoints', 'transfer_middle_frame_predictor.h5')
+_frame_model_load_path = _frame_model_save_path
 _frame_log_path = os.path.join('train', 'logs', 'middle_frame_predictor')
-
-
 
 
 class Networks:
@@ -63,16 +57,12 @@ class Networks:
 
         return autoencoder, encoder, decoder
 
-
     @staticmethod
-    def get_middle_frame_predictor(ae_transfer_ok = True, ae_model_load_path: str = _ae_model_load_path,
-                                   ae_trainable: bool = False):
+    def get_middle_frame_predictor(ae_transfer_ok = True, ae_model_load_path: str = _ae_model_load_path):
         """
         ae_transfer_ok = True일 경우
-        이 모델은 FindOptimalAutoencoder에서 이미 세팅된 오토인코더를 전이하여 구성한 모델이다.
-        훈련과정에서 성능향상이 더딜 경우 ar_trainable = True로 바꿔서 훈련을 이어가자.
+        이 함수는 FindOptimalAutoencoder에서 이미 세팅된 오토인코더를 전이하여 구성된 모델을 반환한다..
         :param ae_model_load_path: 세팅된 오토인코더가 저장된 경로.
-        :param ae_trainable: 오토 인코더는 이미 학습을 마쳤다고 가정하기 때문에 False를 기본값으로 한다.
         :return: x
         """
 
@@ -80,9 +70,6 @@ class Networks:
             _, encoder, decoder = Networks.get_pretrained_autoencoder(ae_model_load_path=ae_model_load_path)
         else:
             _, encoder, decoder = Networks.get_initial_autoencoder()
-
-        encoder.trainable = ae_trainable
-        decoder.trainable = ae_trainable
 
         def _residual_unit(tensor, filters: int):
             skip_value = keras.layers.Conv2D(filters, 3, padding='same', use_bias=False)(tensor)
@@ -107,8 +94,8 @@ class Networks:
         frame2 = _residual_unit(frame2, 16)
         frame2 = _residual_unit(frame2, 8)
         frame2 = _residual_unit(frame2, 4)  # (None, 50, 50, 4)
-        frame2 = keras.layers.Conv2DTranspose(3, 5, strides=2, padding='same')(frame2)
-#        frame2 = decoder(frame2)  # (None, 100, 100, 3)
+#        frame2 = keras.layers.Conv2DTranspose(3, 5, strides=2, padding='same')(frame2)
+        frame2 = decoder(frame2)  # (None, 100, 100, 3)
         frame2 = keras.layers.Reshape((1, 100, 100, 3))(frame2)  # (None, 1, 100, 100, 3) 타겟 형태에 맞추기 위한 reshape
 
         middle_frame_predictor = keras.Model(inputs=frames, outputs=frame2, name="middle_frame_predictor")
@@ -140,7 +127,7 @@ class Train:
 
     @staticmethod
     def train_middle_frame_predictor(num_npy: int, epochs: int, iteration: int, batch_size: int = 32,
-                                     ae_transfer_ok = True, ae_trainable: bool = True, patience_of_early_stopping=5, weights_load_ok=True):
+                                     ae_transfer_ok = True, ae_transfer_trainable: bool = True, patience_of_early_stopping=5, resume_train=True):
         """
         한번의 iteration 동안 npy_dataset_path에 있는 npy들 중에서 num_npy개 만큼 랜덤으로 골라서 데이터 셋으로 가공하고 epochs만큼 훈련한다. \n
         이미 가중치가 세팅된 오토인코더를 로드하여 전이학습을 진행할 것이며, ae_trainable = True일 경우 낮은 학습률 하에서 가중치 갱신을 허용한다. \n
@@ -148,29 +135,42 @@ class Train:
         :param num_npy: 랜덤으로 샘플링되어 데이터셋으로 가공될 npy의 갯수.
         :param epochs:
         :param iteration: 데이터셋을 만들고 모델을 훈련하는 반복문의 반복 횟수.
-        :param ae_trainable: 전이된 오토인코더의 가중치 갱신 여부.
+        :param ae_transfer_trainable: 전이된 오토인코더의 가중치 갱신 여부.
         :param batch_size:
         :param patience_of_early_stopping: 이 숫자만큼의 에폭동안 val_loss가 감소하지 않을 시 훈련을 조기 종료.
-        :param weights_load_ok: 저장된 middle_frame_predictor의 가중치를 로드해서 임의 중단된 훈련을 재개할지 여부.
+        :param resume_train: 저장된 middle_frame_predictor의 가중치를 로드해서 임의 중단된 훈련을 재개할지 여부.
         :return: x
         """
         frame_model = Networks.get_middle_frame_predictor(ae_transfer_ok=ae_transfer_ok,
-                                                          ae_model_load_path=_ae_model_load_path,
-                                                          ae_trainable=ae_trainable)
+                                                          ae_model_load_path=_ae_model_load_path)
+
+        # 중단된 훈련을 재개할 경우 중간 저장된 모델을 로드.
+        if resume_train:
+            frame_model.load_weights(_frame_model_save_path)
+
+        # 전이된 층을 동결하거나 활성화함.
+        for layer in frame_model.layers:
+            if layer.name == 'encoder' or layer.name == 'decoder':
+                layer.trainable = ae_transfer_trainable
 
         frame_model.compile(loss=keras.losses.binary_crossentropy, optimizer='adam', metrics=['acc'])
-        if weights_load_ok:
-            frame_model.load_weights(_frame_weights_load_path)
 
-        print("You can monitor this training by using Tensor Board. Type the next line in terminal window")
-        print(f"<tensorboard --logdir={_frame_log_path} --port=6006>")
+
+        print("\n\nYou can monitor this training by using Tensor Board. Type the next line in terminal window.")
+        print(f": tensorboard --logdir={_frame_log_path} --port=6006\n\n")
+        start_time = time.strftime('%y/%m/%d %H:%M', time.localtime())
         for i in range(iteration):
+            current_time = time.strftime('%y/%m/%d %H:%M', time.localtime())
+            print("--------------------------")
+            print(f"Start local time : {start_time}")
+            print(f"Current local time : {current_time}")
             print(f"{frame_model.name}: {i + 1}th iteration starts.")
             # 모델간의 비교를 위해서 시드를 정해두자.
             ndarray, dataset_size = make_dataset.load_npys_and_get_one_np(_npy_dataset_path, num_npy=num_npy, num_seq=3, seed=i*i)
             trainset, validset, testset = make_dataset.np_to_tf_dataset(ndarray, dataset_size, batch_size=32, seed=i*i)
+            #save_weights_only=False로 했다가 갖은 고생을 했다.. 로드할때 번거롭더라도 True로 쓰자.
             frame_model.fit(trainset, epochs=epochs, batch_size=batch_size, validation_data=validset,
-                            callbacks=Train.callbacks(_frame_log_path, _frame_weights_save_path, patience=patience_of_early_stopping))  # 위에서 정의한 모든 콜백 적용해서 피팅.
+                            callbacks=Train.callbacks(_frame_log_path, _frame_model_save_path, save_weights_only=True, patience=patience_of_early_stopping))  # 위에서 정의한 모든 콜백 적용해서 피팅.
             del ndarray, trainset, validset, testset
 
 class GPU_limit:
@@ -208,10 +208,14 @@ if __name__ == '__main__':
     os.putenv('TF_GPU_ALLOCATOR', 'cuda_malloc_async')
 
     """Res Unit을 사용하지 않은 사전훈련된 오토인코더를 동결해서 전이 학습해보기."""
-    #Train.train_middle_frame_predictor(20, 100, 1000, ae_transfer_ok=True, ae_trainable=False, weights_load_ok=False)
+    # 처음 훈련시
+    Train.train_middle_frame_predictor(20, 100, 1000, ae_transfer_ok=True, ae_transfer_trainable=False, resume_train=False)
     # if performance is not improving, stop previous line, and run next line.
-#    Train().train_middle_frame_predictor(20, 100, 1000, ae_trainable=True, weights_load_ok=True)
+    #Train().train_middle_frame_predictor(20, 100, 1000, ae_transfer_ok=True, ae_transfer_trainable=True, resume_train=True)
 
 
     """Res Unit을 사용하지 않은 초기 상태의 오토인코더를 사용하여 학습해보기"""
-    Train.train_middle_frame_predictor(20, 100, 10000, ae_transfer_ok=False, ae_trainable=True, weights_load_ok=False, patience_of_early_stopping= 10)
+    #처음 훈련시
+    #Train.train_middle_frame_predictor(20, 100, 10000, ae_transfer_ok=False, ae_transfer_trainable=True, resume_train=False)
+    #이어서 훈련시
+    #Train.train_middle_frame_predictor(20, 100, 10000, ae_transfer_ok=False, ae_transfer_trainable=True, resume_train=True)

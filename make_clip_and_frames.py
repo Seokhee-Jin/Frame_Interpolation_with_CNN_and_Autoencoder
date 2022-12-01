@@ -37,11 +37,7 @@ def video_to_frame(filename, H_fps, directory):  # 사용자가 원하는 프레
     filename_without_extension = os.path.splitext(os.path.basename(filename))[0]
     directory_path = os.path.join(directory, 'frame', filename_without_extension)
 
-    try:
-        if not os.path.exists(directory_path):
-            os.makedirs(directory_path)
-    except OSError:
-        print('Error: Creating directory. ' + directory_path)
+    os.makedirs(directory_path, exist_ok=True)
 
     video = cv2.VideoCapture(filename)
 
@@ -60,15 +56,14 @@ def video_to_frame(filename, H_fps, directory):  # 사용자가 원하는 프레
         ret, image = video.read()
         if not ret: break
         if (count % HPS == 0):
-            # h, w, c = image.shape
-            # mid_x, mid_y = w // 2, h // 2
-            # image = image[mid_y - 50:mid_y + 50, mid_x - 50:mid_x + 50]
             cv2.imwrite(os.path.join(directory_path, "%06d.jpg" % number), image)
             print('Saved frame number :', filename_without_extension, str(int(video.get(1))))
             number += 1
         count += 1
 
     video.release()
+
+    return
 
 def frame_to_video(frame_dir, fps, result_dir='.'):
     """
