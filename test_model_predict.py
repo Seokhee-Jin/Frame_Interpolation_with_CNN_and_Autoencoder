@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-_imagefile1 = r'D:\data10sec\frame\Avatar0001\000072.jpg'
+_imagefile1 = r"D:\data10sec\frame\The.Lion.King0185\000008.jpg"
 _imagefile2 = r'D:\data10sec\frame\Avatar0130\000072.jpg'
 _ae_model_load_path = os.path.join('train', 'checkpoints', 'proto_ae_123321.h5')
 
@@ -24,13 +24,13 @@ def test_autoencoder(autoencoder_model):
     fig = plt.figure(figsize=(10, 10))
     plt.subplot(1, 2, 1)
     plt.imshow(img1[:, :, ::-1])
-    plt.title('result 1')
+    plt.title('original frame')
     plt.xticks([])
     plt.yticks([])
 
     plt.subplot(1, 2, 2)
     plt.imshow(np.reshape(autoencoder_model.predict(np.expand_dims(img1, axis=0) / 255.0), (100, 100, 3))[:, :, ::-1])
-    plt.title('result 2')
+    plt.title('encoded and decoded frame')
     plt.xticks([])
     plt.yticks([])
     plt.show()
@@ -83,19 +83,19 @@ def test_middle_frame_predictor(middle_frame_predictor_model):
 
 
 if __name__ == '__main__':
-    transfer_autoencoder = Networks.get_middle_frame_predictor(ae_transfer_ok=True)
-    # transfer_autoencoder.load_weights(_frame_weights_transfer)
-    #
-    # natural_autoencoder = Networks.get_middle_frame_predictor(ae_transfer_ok=False)
-    # natural_autoencoder.load_weights(_frame_weights_natural)
+    #transfer_autoencoder = Networks.get_middle_frame_predictor(ae_transfer_ok=True)
+    #transfer_autoencoder = keras.models.load_model(_ae_model_load_path)
 
-    #autoencoder = keras.models.load_model(r"C:\Users\32174417\PycharmProjects\openSourceAI_22_2\train\checkpoints\transfer_middle_frame_predictor.h5")
-    #test_autoencoder(autoencoder)
+    #natural_autoencoder = Networks.get_middle_frame_predictor(ae_transfer_ok=False)
+    #natural_autoencoder.load_weights(_frame_weights_natural)
+
+    autoencoder = keras.models.load_model(_ae_model_load_path)
+    test_autoencoder(autoencoder)
 
     #동결전이모델 테스트
-    _middle_frame_predictor_model = Networks.get_middle_frame_predictor()
-    _middle_frame_predictor_model.load_weights(_frame_weights_transfer)
-    test_middle_frame_predictor(_middle_frame_predictor_model)
+    #_middle_frame_predictor_model = Networks.get_middle_frame_predictor()
+    #_middle_frame_predictor_model.load_weights(_frame_weights_transfer)
+    #test_middle_frame_predictor(_middle_frame_predictor_model)
 
     #전이x모델 테스트
     # _middle_frame_predictor_model = Networks.get_middle_frame_predictor()
