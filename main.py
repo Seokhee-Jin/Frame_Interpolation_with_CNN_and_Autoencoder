@@ -1,3 +1,5 @@
+#pip list --format=freeze > ./requirements.txt
+
 import cv2
 import numpy as np
 from tensorflow import keras
@@ -126,4 +128,6 @@ def tempmethod(video_filename: str, save_filename: str, middle_frame_predictor_m
 
 if __name__ == "__main__":
     # convert_video_double_fps_()
-    tempmethod(r"D:\data1min_\clip\Avatar130.mp4", "test.mp4")
+    video_path = os.path.join("video", "Avatar130.mp4")
+    save_path = os.path.join("video", "Avatar130_x2.mp4")
+    tempmethod(video_path, save_path)
