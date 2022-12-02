@@ -45,9 +45,6 @@ def video_to_frame(filename, H_fps, directory):  # 사용자가 원하는 프레
         print("Could not Open :", filename)
         exit(0)
 
-    fps = video.get(cv2.CAP_PROP_FPS)
-    HPS = fps / H_fps
-
     count = 0
     number = 0
 
@@ -55,20 +52,20 @@ def video_to_frame(filename, H_fps, directory):  # 사용자가 원하는 프레
 
         ret, image = video.read()
         if not ret: break
-        if (count % HPS == 0):
-            cv2.imwrite(os.path.join(directory_path, "%06d.jpg" % number), image)
-            print('Saved frame number :', filename_without_extension, str(int(video.get(1))))
-            number += 1
+
+        cv2.imwrite(os.path.join(directory_path, "%06d.jpg" % number), image)
+        print('Saved frame number :', filename_without_extension, str(int(video.get(1))))
+        number += 1
         count += 1
 
     video.release()
 
     return
 
-def frame_to_video(frame_dir, fps, result_dir='.'):
+def frame_to_video(frame_dir, result_filename, fps):
     """
     :param frame_dir: 비디오로 변환할 프레임이 있는 디렉토리 이름
-    :param result_dir: 변환 결과 비디오 이름 지정
+    :param result_filename: 변환 결과 비디오 이름 지정
     :param fps: fps 지정
     """
     clips = []
@@ -81,7 +78,7 @@ def frame_to_video(frame_dir, fps, result_dir='.'):
             clips.append(ImageClip(os.path.join(frame_dir, filename)).set_duration(1/fps))
 
     video = concatenate_videoclips(clips, method="compose")
-    video.write_videofile(os.path.join(result_dir, os.path.basename(frame_dir) + '.mp4'), fps=fps)
+    video.write_videofile(result_filename, fps=fps)
 
 
 def frame_to_npy(frames_dir: str, directory: str):  # frames를 (batch_size, height, width, channel)의 numpy 배열로 저장하기.
@@ -106,6 +103,7 @@ def frame_to_npy(frames_dir: str, directory: str):  # frames를 (batch_size, hei
 
 def make_clips_and_frames(root_dir=r"D:\data", video_dir=r"D:\data\video"):
     """
+    # Do not use. temporary method.
     # 샘플데이터 만들기 위한 임시 메소드. data_dir안에 video폴더 안에는 이미 동영상파일들이 있어야함.
     """
 
