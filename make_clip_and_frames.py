@@ -45,8 +45,8 @@ def video_to_frame(filename, H_fps, directory):  # 사용자가 원하는 프레
         print("Could not Open :", filename)
         exit(0)
 
-    fps = round(video.get(cv2.CAP_PROP_FPS))
-    HPS = round(fps / H_fps)
+    fps = video.get(cv2.CAP_PROP_FPS)
+    HPS = fps / H_fps
 
     count = 0
     number = 0
