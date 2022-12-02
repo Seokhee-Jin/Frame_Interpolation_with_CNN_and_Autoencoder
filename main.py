@@ -15,7 +15,7 @@ from moviepy.editor import *
 # r"D:\data1min_\clip\Star.Wars091.mp4"
 # r"D:\data1min_\clip\The.Lion.King004.mp4"
 
-_video_path = "D:\data1min_\clip\The.Lion.King004_2.mp4"
+_video_path = os.path.join("video", "Avatar130.mp4")
 _frame_weights = os.path.join("train", "checkpoints", "transfer_middle_frame_predictor.h5")
 _middle_frame_predictor_model = Networks.get_middle_frame_predictor()
 _middle_frame_predictor_model.load_weights(_frame_weights)
