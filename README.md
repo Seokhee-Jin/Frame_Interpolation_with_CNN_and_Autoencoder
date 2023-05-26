@@ -1,12 +1,13 @@
-# Frame Interpolation using CNN and Auto Encoder.
+# Frame Interpolation using CNN and Auto Encoder. * This repository is for my research, not for public users. 
 
-Project for "OpenSource AI Application" class.
+I converted several videos using this auto-encoder network to 24, 48 and 96 fps.
 
+The results are uploaded on Youtube below. Click to watch them.
 
-[![Avatar test](https://i.ytimg.com/an_webp/MVgPcENaGs8/mqdefault_6s.webp?du=3000&sqp=CO-b_JwG&rs=AOn4CLAKnJb_2kQCCuRaSO0L41ljFJIAUg)](https://www.youtube.com/watch?v=MVgPcENaGs8)
+[![Avatar test](https://i.ytimg.com/vi/MVgPcENaGs8/hqdefault.jpg?sqp=-oaymwE2CPYBEIoBSFXyq4qpAygIARUAAIhCGAFwAcABBvABAfgB_gmAAtAFigIMCAAQARhlIFAoOjAP&rs=AOn4CLAz2zFM9bAkbInXRnUK950Ls1KHTw)](https://www.youtube.com/watch?v=MVgPcENaGs8)
 
-[![Lion King test](https://i.ytimg.com/an_webp/xrWlvtLTsfQ/mqdefault_6s.webp?du=3000&sqp=CPTZ_JwG&rs=AOn4CLAkFm5QXMDGrDN0T166B1IzxTtWRQ)](https://youtu.be/xrWlvtLTsfQ)
+[![Lion King test](https://i.ytimg.com/vi/xrWlvtLTsfQ/hqdefault.jpg?sqp=-oaymwE2CPYBEIoBSFXyq4qpAygIARUAAIhCGAFwAcABBvABAfgB_gmAAtAFigIMCAAQARhyIGAoFzAP&rs=AOn4CLCKmmu8CGpv45A8Q--Ucu3-uqutaw)](https://youtu.be/xrWlvtLTsfQ)
 
-[![Star Wars test](https://i.ytimg.com/an_webp/JBEJwDaJIKc/mqdefault_6s.webp?du=3000&sqp=COmn_JwG&rs=AOn4CLDs83fmulXIJh2g4ohpTNzmqiJ1jw)](https://youtu.be/JBEJwDaJIKc)
+[![Star Wars test](https://i.ytimg.com/vi/JBEJwDaJIKc/hqdefault.jpg?sqp=-oaymwE2CPYBEIoBSFXyq4qpAygIARUAAIhCGAFwAcABBvABAfgB_gmAAtAFigIMCAAQARhFIFoocjAP&rs=AOn4CLBbdsDv4CmBVB0NAg8FJLBHys6NFw)](https://youtu.be/JBEJwDaJIKc)
 
-[![Singin' in the rain test](https://i.ytimg.com/an_webp/bFH9S5fdAZE/mqdefault_6s.webp?du=3000&sqp=COzF_JwG&rs=AOn4CLC0ZOPR6G0h6EqItCgZBwzX2OxcBQ)](https://youtu.be/bFH9S5fdAZE)
+[![Singin' in the rain test](https://i.ytimg.com/vi/bFH9S5fdAZE/hqdefault.jpg?sqp=-oaymwE2CPYBEIoBSFXyq4qpAygIARUAAIhCGAFwAcABBvABAfgB_gmAAtAFigIMCAAQARhyIEsoRzAP&rs=AOn4CLCuLiGpPjnwtCsKC4lWP5gGso2x0w)](https://youtu.be/bFH9S5fdAZE)
