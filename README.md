@@ -1,4 +1,5 @@
-# Frame Interpolation using CNN and Auto Encoder. * This repository is for my research, not for public users. 
+# Frame Interpolation using CNN and Auto Encoder.
+## * This repository is for my research, not intended for public use. 
 
 I converted several videos using this auto-encoder network to 24, 48 and 96 fps.
 
