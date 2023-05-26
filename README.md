@@ -3,7 +3,7 @@
 
 I converted several videos using this auto-encoder network to 24, 48 and 96 fps.
 
-The results are uploaded on Youtube below. Click to watch them.
+The results are uploaded on Youtube below. Click to watch them. ( After 1 minute, these videos are slowed down in order to see the difference in fps more clearly.)
 
 [![Avatar test](https://i.ytimg.com/vi/MVgPcENaGs8/hqdefault.jpg?sqp=-oaymwE2CPYBEIoBSFXyq4qpAygIARUAAIhCGAFwAcABBvABAfgB_gmAAtAFigIMCAAQARhlIFAoOjAP&rs=AOn4CLAz2zFM9bAkbInXRnUK950Ls1KHTw)](https://www.youtube.com/watch?v=MVgPcENaGs8)
 
